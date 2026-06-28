@@ -16,6 +16,15 @@ type BoneRig = {
   baseQuaternions: Record<string, THREE.Quaternion>;
 };
 
+type StageMotion = {
+  x: number;
+  y: number;
+  z: number;
+  rotX: number;
+  rotY: number;
+  rotZ: number;
+};
+
 const getPreferredClipName = (pose: GeomagPose, clips: THREE.AnimationClip[]) => {
   if (clips.length === 0) return null;
 
@@ -67,6 +76,106 @@ const createBoneRig = (model: THREE.Object3D): BoneRig => {
   return { bones, baseQuaternions };
 };
 
+const getStageMotion = (poseId: string, elapsed: number): StageMotion => {
+  const walk = Math.sin(elapsed * 3.1);
+  const run = Math.sin(elapsed * 7.4);
+  const runImpact = Math.abs(Math.sin(elapsed * 7.4));
+  const breathe = Math.sin(elapsed * 1.65);
+  const pulse = Math.sin(elapsed * 4.6);
+
+  switch (poseId) {
+    case 'walk_cycle':
+      return {
+        x: walk * 0.035,
+        y: Math.abs(walk) * 0.045,
+        z: 0,
+        rotX: 0.02 * Math.abs(walk),
+        rotY: 0.08 * walk,
+        rotZ: -0.035 * walk,
+      };
+
+    case 'run_sprint':
+      return {
+        x: run * 0.055,
+        y: runImpact * 0.075,
+        z: 0,
+        rotX: -0.16 + 0.035 * runImpact,
+        rotY: 0.11 * run,
+        rotZ: -0.055 * run,
+      };
+
+    case 'jump_airborne':
+      return {
+        x: 0,
+        y: 0.12 + Math.sin(elapsed * 2.4) * 0.055,
+        z: 0,
+        rotX: -0.08 + 0.04 * breathe,
+        rotY: 0.08 * breathe,
+        rotZ: 0.06 * pulse,
+      };
+
+    case 'landing':
+      return {
+        x: 0,
+        y: Math.abs(pulse) * 0.035,
+        z: 0,
+        rotX: 0.2 + 0.04 * Math.abs(pulse),
+        rotY: 0.025 * breathe,
+        rotZ: 0,
+      };
+
+    case 'sitting_relax':
+      return {
+        x: 0,
+        y: 0.018 * breathe,
+        z: 0,
+        rotX: 0.06 + 0.015 * breathe,
+        rotY: 0.035 * Math.sin(elapsed * 0.8),
+        rotZ: 0.012 * breathe,
+      };
+
+    case 'thinking':
+      return {
+        x: 0,
+        y: 0.025 * breathe,
+        z: 0,
+        rotX: 0.055 + 0.02 * pulse,
+        rotY: -0.12 + 0.05 * breathe,
+        rotZ: -0.025,
+      };
+
+    case 'victory':
+      return {
+        x: 0,
+        y: 0.035 + Math.abs(pulse) * 0.04,
+        z: 0,
+        rotX: -0.035 * Math.abs(pulse),
+        rotY: 0.08 * breathe,
+        rotZ: 0.035 * pulse,
+      };
+
+    case 'pointing':
+      return {
+        x: 0.025 * breathe,
+        y: 0.02 * breathe,
+        z: 0,
+        rotX: 0.01,
+        rotY: 0.2 + 0.045 * breathe,
+        rotZ: -0.02 * pulse,
+      };
+
+    default:
+      return {
+        x: 0,
+        y: 0.022 * breathe,
+        z: 0,
+        rotX: 0.012 * breathe,
+        rotY: 0.04 * Math.sin(elapsed * 0.85),
+        rotZ: 0.012 * Math.cos(elapsed * 1.1),
+      };
+  }
+};
+
 const applyProceduralMotion = (rig: BoneRig, poseId: string, elapsed: number) => {
   Object.entries(rig.baseQuaternions).forEach(([name, quaternion]) => {
     rig.bones[name]?.quaternion.copy(quaternion);
@@ -80,79 +189,96 @@ const applyProceduralMotion = (rig: BoneRig, poseId: string, elapsed: number) =>
     bone.rotateZ(z);
   };
 
-  const wave = Math.sin(elapsed * 2.2);
-  const pulse = Math.sin(elapsed * 4.4);
-  const fast = Math.sin(elapsed * 7.2);
+  const wave = Math.sin(elapsed * 3.1);
+  const waveOpp = Math.sin(elapsed * 3.1 + Math.PI);
+  const pulse = Math.sin(elapsed * 4.6);
+  const fast = Math.sin(elapsed * 7.4);
+  const fastOpp = Math.sin(elapsed * 7.4 + Math.PI);
+  const runImpact = Math.abs(fast);
 
-  setRotation('body', 0.02 * wave, 0.06 * Math.sin(elapsed * 0.8), 0.025 * wave);
-  setRotation('body_top1', 0.03 * wave, 0, 0.02 * Math.cos(elapsed * 1.1));
-  setRotation('neck', 0.015 * pulse, 0.025 * wave, 0);
-  setRotation('head', 0.025 * pulse, 0.04 * Math.sin(elapsed * 0.9), 0.012 * wave);
+  setRotation('body', 0.035 * Math.abs(wave), 0.08 * Math.sin(elapsed * 0.8), 0.035 * wave);
+  setRotation('body_top1', 0.045 * wave, 0.02 * pulse, 0.035 * Math.cos(elapsed * 1.1));
+  setRotation('neck', 0.026 * pulse, 0.04 * wave, 0);
+  setRotation('head', 0.04 * pulse, 0.06 * Math.sin(elapsed * 0.9), 0.018 * wave);
 
   switch (poseId) {
     case 'walk_cycle':
-      setRotation('arm_left_top', 0.38 * wave, 0, -0.05);
-      setRotation('arm_right_top', -0.38 * wave, 0, 0.05);
-      setRotation('leg_left_top', -0.34 * wave, 0, 0.02);
-      setRotation('leg_right_top', 0.34 * wave, 0, -0.02);
-      setRotation('leg_left_bot', Math.max(0, 0.22 * wave), 0, 0);
-      setRotation('leg_right_bot', Math.max(0, -0.22 * wave), 0, 0);
+      setRotation('arm_left_top', 0.62 * wave, 0.03 * wave, -0.08);
+      setRotation('arm_right_top', 0.62 * waveOpp, -0.03 * wave, 0.08);
+      setRotation('arm_left_bot', -0.18 + 0.16 * waveOpp, 0, 0);
+      setRotation('arm_right_bot', -0.18 + 0.16 * wave, 0, 0);
+      setRotation('leg_left_top', 0.52 * waveOpp, 0, 0.03);
+      setRotation('leg_right_top', 0.52 * wave, 0, -0.03);
+      setRotation('leg_left_bot', 0.18 + Math.max(0, wave) * 0.42, 0, 0);
+      setRotation('leg_right_bot', 0.18 + Math.max(0, waveOpp) * 0.42, 0, 0);
+      setRotation('leg_left_foot', -0.14 * wave, 0, 0);
+      setRotation('leg_right_foot', -0.14 * waveOpp, 0, 0);
       break;
 
     case 'run_sprint':
-      setRotation('body', -0.18 + 0.03 * wave, 0.04 * wave, 0);
-      setRotation('arm_left_top', 0.62 * fast, 0, -0.12);
-      setRotation('arm_right_top', -0.62 * fast, 0, 0.12);
-      setRotation('arm_left_bot', -0.35 + 0.18 * fast, 0, 0);
-      setRotation('arm_right_bot', -0.35 - 0.18 * fast, 0, 0);
-      setRotation('leg_left_top', -0.55 * fast, 0, 0);
-      setRotation('leg_right_top', 0.55 * fast, 0, 0);
-      setRotation('leg_left_bot', 0.35 + Math.max(0, fast) * 0.35, 0, 0);
-      setRotation('leg_right_bot', 0.35 + Math.max(0, -fast) * 0.35, 0, 0);
+      setRotation('body', -0.28 + 0.05 * runImpact, 0.07 * fast, -0.04 * fast);
+      setRotation('body_top2', -0.08 + 0.035 * fast, 0.04 * fastOpp, 0);
+      setRotation('arm_left_top', 0.95 * fast, 0.04 * fast, -0.18);
+      setRotation('arm_right_top', 0.95 * fastOpp, -0.04 * fast, 0.18);
+      setRotation('arm_left_bot', -0.55 + 0.28 * fastOpp, 0, 0);
+      setRotation('arm_right_bot', -0.55 + 0.28 * fast, 0, 0);
+      setRotation('leg_left_top', 0.78 * fastOpp, 0, 0.03);
+      setRotation('leg_right_top', 0.78 * fast, 0, -0.03);
+      setRotation('leg_left_bot', 0.32 + Math.max(0, fast) * 0.62, 0, 0);
+      setRotation('leg_right_bot', 0.32 + Math.max(0, fastOpp) * 0.62, 0, 0);
+      setRotation('leg_left_foot', -0.22 * fast, 0, 0);
+      setRotation('leg_right_foot', -0.22 * fastOpp, 0, 0);
       break;
 
     case 'jump_airborne':
-      setRotation('body', -0.08 + 0.04 * wave, 0, 0);
-      setRotation('arm_left_top', -0.35, 0, -0.45 + 0.08 * wave);
-      setRotation('arm_right_top', -0.35, 0, 0.45 - 0.08 * wave);
-      setRotation('leg_left_top', 0.42 + 0.06 * pulse, 0, -0.08);
-      setRotation('leg_right_top', 0.42 - 0.06 * pulse, 0, 0.08);
-      setRotation('leg_left_bot', 0.42, 0, 0);
-      setRotation('leg_right_bot', 0.42, 0, 0);
+      setRotation('body', -0.16 + 0.08 * wave, 0, 0.04 * pulse);
+      setRotation('arm_left_top', -0.58, 0, -0.62 + 0.13 * wave);
+      setRotation('arm_right_top', -0.58, 0, 0.62 - 0.13 * wave);
+      setRotation('arm_left_bot', -0.2, 0, 0);
+      setRotation('arm_right_bot', -0.2, 0, 0);
+      setRotation('leg_left_top', 0.72 + 0.1 * pulse, 0, -0.14);
+      setRotation('leg_right_top', 0.72 - 0.1 * pulse, 0, 0.14);
+      setRotation('leg_left_bot', 0.72, 0, 0);
+      setRotation('leg_right_bot', 0.72, 0, 0);
       break;
 
     case 'landing':
-      setRotation('body', 0.26 + 0.03 * pulse, 0, 0);
-      setRotation('arm_left_top', 0.22, 0, -0.15);
-      setRotation('arm_right_top', 0.22, 0, 0.15);
-      setRotation('leg_left_top', 0.45, 0, -0.07);
-      setRotation('leg_right_top', 0.45, 0, 0.07);
-      setRotation('leg_left_bot', 0.58 + 0.03 * pulse, 0, 0);
-      setRotation('leg_right_bot', 0.58 + 0.03 * pulse, 0, 0);
+      setRotation('body', 0.42 + 0.06 * Math.abs(pulse), 0, 0);
+      setRotation('arm_left_top', 0.36 + 0.06 * pulse, 0, -0.22);
+      setRotation('arm_right_top', 0.36 - 0.06 * pulse, 0, 0.22);
+      setRotation('arm_left_bot', -0.24, 0, 0);
+      setRotation('arm_right_bot', -0.24, 0, 0);
+      setRotation('leg_left_top', 0.72, 0, -0.12);
+      setRotation('leg_right_top', 0.72, 0, 0.12);
+      setRotation('leg_left_bot', 0.88 + 0.08 * Math.abs(pulse), 0, 0);
+      setRotation('leg_right_bot', 0.88 + 0.08 * Math.abs(pulse), 0, 0);
       break;
 
     case 'thinking':
-      setRotation('arm_right_top', -0.55 + 0.04 * wave, 0.12, 0.16);
-      setRotation('arm_right_bot', -0.72, 0.08, 0.06);
-      setRotation('arm_left_top', 0.08 * wave, 0, -0.08);
-      setRotation('head', 0.08 + 0.02 * pulse, -0.12, 0.03);
+      setRotation('arm_right_top', -0.72 + 0.07 * wave, 0.18, 0.24);
+      setRotation('arm_right_bot', -0.95 + 0.05 * pulse, 0.1, 0.08);
+      setRotation('arm_left_top', 0.14 * wave, 0, -0.12);
+      setRotation('arm_left_bot', -0.16, 0, 0);
+      setRotation('head', 0.14 + 0.035 * pulse, -0.18, 0.045);
       break;
 
     case 'victory':
-      setRotation('arm_left_top', -0.45, 0, -0.72 + 0.05 * wave);
-      setRotation('arm_right_top', -0.45, 0, 0.72 - 0.05 * wave);
-      setRotation('arm_left_bot', -0.22, 0, 0);
-      setRotation('arm_right_bot', -0.22, 0, 0);
-      setRotation('leg_left_top', 0, 0, -0.12);
-      setRotation('leg_right_top', 0, 0, 0.12);
+      setRotation('arm_left_top', -0.68 + 0.08 * pulse, 0, -0.92 + 0.08 * wave);
+      setRotation('arm_right_top', -0.68 - 0.08 * pulse, 0, 0.92 - 0.08 * wave);
+      setRotation('arm_left_bot', -0.34, 0, 0);
+      setRotation('arm_right_bot', -0.34, 0, 0);
+      setRotation('leg_left_top', 0.06, 0, -0.18);
+      setRotation('leg_right_top', 0.06, 0, 0.18);
       break;
 
     case 'pointing':
-      setRotation('body', 0.01 * wave, 0.16 + 0.03 * wave, 0);
-      setRotation('arm_right_top', -0.1, -0.22, 0.18);
-      setRotation('arm_right_bot', -0.06, 0, 0);
-      setRotation('arm_left_top', 0.28, 0, -0.16);
-      setRotation('head', 0.02 * pulse, 0.18, 0);
+      setRotation('body', 0.02 * wave, 0.24 + 0.055 * wave, 0);
+      setRotation('arm_right_top', -0.18 + 0.025 * pulse, -0.36, 0.28);
+      setRotation('arm_right_bot', -0.08, 0, 0);
+      setRotation('arm_right_hand', 0, 0.08 * pulse, 0);
+      setRotation('arm_left_top', 0.34, 0, -0.22);
+      setRotation('arm_left_bot', -0.18, 0, 0);
+      setRotation('head', 0.025 * pulse, 0.26, 0);
       break;
 
     default:
@@ -248,6 +374,9 @@ export default function GeomagHumanViewer({
     let disposed = false;
     let mixer: THREE.AnimationMixer | null = null;
     let proceduralRig: BoneRig | null = null;
+    let animatedModel: THREE.Object3D | null = null;
+    let baseModelPosition = new THREE.Vector3();
+    let baseModelRotation = new THREE.Euler();
 
     const fitModelToViewport = (model: THREE.Object3D) => {
       const box = new THREE.Box3().setFromObject(model);
@@ -296,6 +425,9 @@ export default function GeomagHumanViewer({
         proceduralRig = createBoneRig(model);
 
         fitModelToViewport(model);
+        animatedModel = model;
+        baseModelPosition = model.position.clone();
+        baseModelRotation = model.rotation.clone();
         containerGroup.add(model);
 
         if (gltf.animations.length > 0) {
@@ -411,11 +543,24 @@ export default function GeomagHumanViewer({
       mixer?.update(delta);
       if (proceduralRig && !mixer) {
         applyProceduralMotion(proceduralRig, pose.id, elapsed);
+        if (animatedModel) {
+          const stageMotion = getStageMotion(pose.id, elapsed);
+          animatedModel.position.set(
+            baseModelPosition.x + stageMotion.x,
+            baseModelPosition.y + stageMotion.y,
+            baseModelPosition.z + stageMotion.z
+          );
+          animatedModel.rotation.set(
+            baseModelRotation.x + stageMotion.rotX,
+            baseModelRotation.y + stageMotion.rotY,
+            baseModelRotation.z + stageMotion.rotZ
+          );
+        }
       }
 
       if (isRotatingRef.current && !isDragging) {
-        containerGroup.rotation.y += 0.006;
-        containerGroup.rotation.x = Math.sin(elapsed * 0.55) * 0.04;
+        containerGroup.rotation.y += 0.0035;
+        containerGroup.rotation.x = Math.sin(elapsed * 0.55) * 0.025;
       }
 
       if (!isDragging && (Math.abs(rotationVelocity.x) > 0.0001 || Math.abs(rotationVelocity.y) > 0.0001)) {
