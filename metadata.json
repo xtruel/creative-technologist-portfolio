@@ -1,0 +1,6 @@
+{
+  "name": "Creative Technologist Portfolio Cover",
+  "description": "An award-winning editorial portfolio cover and interactive exhibition for a multidisciplinary Creative Technologist, built with a Swiss Grid system, multilingual layouts, and photorealistic 3D parametric glass geometry.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

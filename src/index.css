@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-studio-950: #1a1a1a;
+  --color-studio-900: #222222;
+  --color-studio-200: #e5e5eb;
+  --color-studio-100: #ededf2;
+  --color-studio-50: #f2f2f2;
+}
+
+/* Custom styles for high-fidelity interactive elements */
+::selection {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: inherit;
+}
+
+/* Swiss Grid overlay */
+.swiss-grid-pattern {
+  background-size: 8.333% 100%;
+  background-image: linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px);
+}
+
+/* Glass Panel Styling (Frosted Glass Theme) */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.glass-panel-dark {
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+}
+
+/* Chrome Sphere Styling */
+.chrome-sphere {
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #a8a8a8 45%, #222222 100%);
+  box-shadow: -20px 20px 60px rgba(0,0,0,0.15);
+}
+
+/* Typography styles matching Frosted Glass theme specs */
+.display-type {
+  letter-spacing: -0.04em;
+}
+
+.japanese-type {
+  font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif;
+  letter-spacing: 0.1em;
+}
+
+/* Muted noise overlay for physical paper magazine texture */
+.paper-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+}
+
+/* Premium smooth scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
