@@ -11,6 +11,11 @@ interface GeomagHumanViewerProps {
 
 const MODEL_URL = '/assets/models/neko-mask-character-skeleton.glb';
 
+type BoneRig = {
+  bones: Record<string, THREE.Bone>;
+  baseQuaternions: Record<string, THREE.Quaternion>;
+};
+
 const getPreferredClipName = (pose: GeomagPose, clips: THREE.AnimationClip[]) => {
   if (clips.length === 0) return null;
 
@@ -27,6 +32,136 @@ const getPreferredClipName = (pose: GeomagPose, clips: THREE.AnimationClip[]) =>
     const clipName = clip.name.toLowerCase();
     return candidates.some((candidate) => clipName.includes(candidate));
   })?.name ?? clips[0].name;
+};
+
+const makeMaterialOpaque = (material: THREE.Material) => {
+  material.transparent = false;
+  material.opacity = 1;
+  material.depthWrite = true;
+  material.depthTest = true;
+  material.alphaTest = 0;
+  material.blending = THREE.NormalBlending;
+  material.side = THREE.DoubleSide;
+
+  const typedMaterial = material as THREE.MeshStandardMaterial & {
+    transmission?: number;
+    thickness?: number;
+  };
+
+  if ('transmission' in typedMaterial) typedMaterial.transmission = 0;
+  if ('thickness' in typedMaterial) typedMaterial.thickness = 0;
+  material.needsUpdate = true;
+};
+
+const createBoneRig = (model: THREE.Object3D): BoneRig => {
+  const bones: Record<string, THREE.Bone> = {};
+  const baseQuaternions: Record<string, THREE.Quaternion> = {};
+
+  model.traverse((child) => {
+    if (child instanceof THREE.Bone) {
+      bones[child.name] = child;
+      baseQuaternions[child.name] = child.quaternion.clone();
+    }
+  });
+
+  return { bones, baseQuaternions };
+};
+
+const applyProceduralMotion = (rig: BoneRig, poseId: string, elapsed: number) => {
+  Object.entries(rig.baseQuaternions).forEach(([name, quaternion]) => {
+    rig.bones[name]?.quaternion.copy(quaternion);
+  });
+
+  const setRotation = (name: string, x = 0, y = 0, z = 0) => {
+    const bone = rig.bones[name];
+    if (!bone) return;
+    bone.rotateX(x);
+    bone.rotateY(y);
+    bone.rotateZ(z);
+  };
+
+  const wave = Math.sin(elapsed * 2.2);
+  const pulse = Math.sin(elapsed * 4.4);
+  const fast = Math.sin(elapsed * 7.2);
+
+  setRotation('body', 0.02 * wave, 0.06 * Math.sin(elapsed * 0.8), 0.025 * wave);
+  setRotation('body_top1', 0.03 * wave, 0, 0.02 * Math.cos(elapsed * 1.1));
+  setRotation('neck', 0.015 * pulse, 0.025 * wave, 0);
+  setRotation('head', 0.025 * pulse, 0.04 * Math.sin(elapsed * 0.9), 0.012 * wave);
+
+  switch (poseId) {
+    case 'walk_cycle':
+      setRotation('arm_left_top', 0.38 * wave, 0, -0.05);
+      setRotation('arm_right_top', -0.38 * wave, 0, 0.05);
+      setRotation('leg_left_top', -0.34 * wave, 0, 0.02);
+      setRotation('leg_right_top', 0.34 * wave, 0, -0.02);
+      setRotation('leg_left_bot', Math.max(0, 0.22 * wave), 0, 0);
+      setRotation('leg_right_bot', Math.max(0, -0.22 * wave), 0, 0);
+      break;
+
+    case 'run_sprint':
+      setRotation('body', -0.18 + 0.03 * wave, 0.04 * wave, 0);
+      setRotation('arm_left_top', 0.62 * fast, 0, -0.12);
+      setRotation('arm_right_top', -0.62 * fast, 0, 0.12);
+      setRotation('arm_left_bot', -0.35 + 0.18 * fast, 0, 0);
+      setRotation('arm_right_bot', -0.35 - 0.18 * fast, 0, 0);
+      setRotation('leg_left_top', -0.55 * fast, 0, 0);
+      setRotation('leg_right_top', 0.55 * fast, 0, 0);
+      setRotation('leg_left_bot', 0.35 + Math.max(0, fast) * 0.35, 0, 0);
+      setRotation('leg_right_bot', 0.35 + Math.max(0, -fast) * 0.35, 0, 0);
+      break;
+
+    case 'jump_airborne':
+      setRotation('body', -0.08 + 0.04 * wave, 0, 0);
+      setRotation('arm_left_top', -0.35, 0, -0.45 + 0.08 * wave);
+      setRotation('arm_right_top', -0.35, 0, 0.45 - 0.08 * wave);
+      setRotation('leg_left_top', 0.42 + 0.06 * pulse, 0, -0.08);
+      setRotation('leg_right_top', 0.42 - 0.06 * pulse, 0, 0.08);
+      setRotation('leg_left_bot', 0.42, 0, 0);
+      setRotation('leg_right_bot', 0.42, 0, 0);
+      break;
+
+    case 'landing':
+      setRotation('body', 0.26 + 0.03 * pulse, 0, 0);
+      setRotation('arm_left_top', 0.22, 0, -0.15);
+      setRotation('arm_right_top', 0.22, 0, 0.15);
+      setRotation('leg_left_top', 0.45, 0, -0.07);
+      setRotation('leg_right_top', 0.45, 0, 0.07);
+      setRotation('leg_left_bot', 0.58 + 0.03 * pulse, 0, 0);
+      setRotation('leg_right_bot', 0.58 + 0.03 * pulse, 0, 0);
+      break;
+
+    case 'thinking':
+      setRotation('arm_right_top', -0.55 + 0.04 * wave, 0.12, 0.16);
+      setRotation('arm_right_bot', -0.72, 0.08, 0.06);
+      setRotation('arm_left_top', 0.08 * wave, 0, -0.08);
+      setRotation('head', 0.08 + 0.02 * pulse, -0.12, 0.03);
+      break;
+
+    case 'victory':
+      setRotation('arm_left_top', -0.45, 0, -0.72 + 0.05 * wave);
+      setRotation('arm_right_top', -0.45, 0, 0.72 - 0.05 * wave);
+      setRotation('arm_left_bot', -0.22, 0, 0);
+      setRotation('arm_right_bot', -0.22, 0, 0);
+      setRotation('leg_left_top', 0, 0, -0.12);
+      setRotation('leg_right_top', 0, 0, 0.12);
+      break;
+
+    case 'pointing':
+      setRotation('body', 0.01 * wave, 0.16 + 0.03 * wave, 0);
+      setRotation('arm_right_top', -0.1, -0.22, 0.18);
+      setRotation('arm_right_bot', -0.06, 0, 0);
+      setRotation('arm_left_top', 0.28, 0, -0.16);
+      setRotation('head', 0.02 * pulse, 0.18, 0);
+      break;
+
+    default:
+      setRotation('arm_left_top', 0.08 * wave, 0, -0.05);
+      setRotation('arm_right_top', -0.08 * wave, 0, 0.05);
+      setRotation('leg_left_top', -0.035 * wave, 0, 0);
+      setRotation('leg_right_top', 0.035 * wave, 0, 0);
+      break;
+  }
 };
 
 export default function GeomagHumanViewer({
@@ -112,6 +247,7 @@ export default function GeomagHumanViewer({
 
     let disposed = false;
     let mixer: THREE.AnimationMixer | null = null;
+    let proceduralRig: BoneRig | null = null;
 
     const fitModelToViewport = (model: THREE.Object3D) => {
       const box = new THREE.Box3().setFromObject(model);
@@ -151,8 +287,13 @@ export default function GeomagHumanViewer({
           if (child instanceof THREE.Mesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+            child.frustumCulled = false;
+
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach(makeMaterialOpaque);
           }
         });
+        proceduralRig = createBoneRig(model);
 
         fitModelToViewport(model);
         containerGroup.add(model);
@@ -163,6 +304,10 @@ export default function GeomagHumanViewer({
           mixer = new THREE.AnimationMixer(model);
           mixer.clipAction(selectedClip).reset().fadeIn(0.2).play();
           setClipLabel(selectedClip.name || 'ANIMATION');
+        } else if (Object.keys(proceduralRig.bones).length > 0) {
+          setClipLabel(`RIG_MOTION_${pose.title}`);
+        } else {
+          setClipLabel('T_POSE_PREVIEW');
         }
 
         setLoading(false);
@@ -264,6 +409,9 @@ export default function GeomagHumanViewer({
       const elapsed = clock.elapsedTime;
 
       mixer?.update(delta);
+      if (proceduralRig && !mixer) {
+        applyProceduralMotion(proceduralRig, pose.id, elapsed);
+      }
 
       if (isRotatingRef.current && !isDragging) {
         containerGroup.rotation.y += 0.006;
