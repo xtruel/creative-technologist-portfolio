@@ -2,7 +2,6 @@ services:
   - type: web
     name: portfolio-qwerty3d
     runtime: static
-    plan: free
     repo: https://github.com/xtruel/creative-technologist-portfolio
     branch: main
     buildCommand: npm ci && npm run build
