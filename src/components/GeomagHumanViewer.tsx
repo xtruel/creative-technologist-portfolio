@@ -14,6 +14,7 @@ const MODEL_URL = '/assets/models/neko-mask-character-skeleton.glb';
 type BoneRig = {
   bones: Record<string, THREE.Bone>;
   baseQuaternions: Record<string, THREE.Quaternion>;
+  baseDirections: Record<string, THREE.Vector3>;
 };
 
 type StageMotion = {
@@ -65,15 +66,20 @@ const makeMaterialOpaque = (material: THREE.Material) => {
 const createBoneRig = (model: THREE.Object3D): BoneRig => {
   const bones: Record<string, THREE.Bone> = {};
   const baseQuaternions: Record<string, THREE.Quaternion> = {};
+  const baseDirections: Record<string, THREE.Vector3> = {};
 
   model.traverse((child) => {
     if (child instanceof THREE.Bone) {
       bones[child.name] = child;
       baseQuaternions[child.name] = child.quaternion.clone();
+      const firstBoneChild = child.children.find((node) => node instanceof THREE.Bone);
+      if (firstBoneChild) {
+        baseDirections[child.name] = firstBoneChild.position.clone().normalize();
+      }
     }
   });
 
-  return { bones, baseQuaternions };
+  return { bones, baseQuaternions, baseDirections };
 };
 
 const getStageMotion = (poseId: string, elapsed: number): StageMotion => {
@@ -189,6 +195,20 @@ const applyProceduralMotion = (rig: BoneRig, poseId: string, elapsed: number) =>
     bone.rotateZ(z);
   };
 
+  const aimBone = (name: string, direction: THREE.Vector3, twist = 0) => {
+    const bone = rig.bones[name];
+    const baseQuaternion = rig.baseQuaternions[name];
+    const baseDirection = rig.baseDirections[name];
+    if (!bone || !baseQuaternion || !baseDirection) return;
+
+    const targetDirection = direction.clone().normalize();
+    const aimQuaternion = new THREE.Quaternion().setFromUnitVectors(baseDirection, targetDirection);
+    bone.quaternion.copy(aimQuaternion.multiply(baseQuaternion));
+    if (twist !== 0) {
+      bone.rotateY(twist);
+    }
+  };
+
   const wave = Math.sin(elapsed * 3.1);
   const waveOpp = Math.sin(elapsed * 3.1 + Math.PI);
   const pulse = Math.sin(elapsed * 4.6);
@@ -203,81 +223,88 @@ const applyProceduralMotion = (rig: BoneRig, poseId: string, elapsed: number) =>
 
   switch (poseId) {
     case 'walk_cycle':
-      setRotation('arm_left_top', 0.62 * wave, 0.03 * wave, -0.08);
-      setRotation('arm_right_top', 0.62 * waveOpp, -0.03 * wave, 0.08);
-      setRotation('arm_left_bot', -0.18 + 0.16 * waveOpp, 0, 0);
-      setRotation('arm_right_bot', -0.18 + 0.16 * wave, 0, 0);
-      setRotation('leg_left_top', 0.52 * waveOpp, 0, 0.03);
-      setRotation('leg_right_top', 0.52 * wave, 0, -0.03);
-      setRotation('leg_left_bot', 0.18 + Math.max(0, wave) * 0.42, 0, 0);
-      setRotation('leg_right_bot', 0.18 + Math.max(0, waveOpp) * 0.42, 0, 0);
-      setRotation('leg_left_foot', -0.14 * wave, 0, 0);
-      setRotation('leg_right_foot', -0.14 * waveOpp, 0, 0);
+      aimBone('arm_left_top', new THREE.Vector3(0.45, -0.82, -0.35 * wave), -0.12);
+      aimBone('arm_right_top', new THREE.Vector3(-0.45, -0.82, 0.35 * wave), 0.12);
+      aimBone('arm_left_bot', new THREE.Vector3(0.28, -0.94, -0.18 * waveOpp));
+      aimBone('arm_right_bot', new THREE.Vector3(-0.28, -0.94, 0.18 * waveOpp));
+      aimBone('leg_left_top', new THREE.Vector3(0.18, -0.84, 0.52 * waveOpp));
+      aimBone('leg_right_top', new THREE.Vector3(-0.18, -0.84, 0.52 * wave));
+      aimBone('leg_left_bot', new THREE.Vector3(0.08, -0.9, Math.max(0, wave) * 0.45));
+      aimBone('leg_right_bot', new THREE.Vector3(-0.08, -0.9, Math.max(0, waveOpp) * 0.45));
       break;
 
     case 'run_sprint':
-      setRotation('body', -0.28 + 0.05 * runImpact, 0.07 * fast, -0.04 * fast);
-      setRotation('body_top2', -0.08 + 0.035 * fast, 0.04 * fastOpp, 0);
-      setRotation('arm_left_top', 0.95 * fast, 0.04 * fast, -0.18);
-      setRotation('arm_right_top', 0.95 * fastOpp, -0.04 * fast, 0.18);
-      setRotation('arm_left_bot', -0.55 + 0.28 * fastOpp, 0, 0);
-      setRotation('arm_right_bot', -0.55 + 0.28 * fast, 0, 0);
-      setRotation('leg_left_top', 0.78 * fastOpp, 0, 0.03);
-      setRotation('leg_right_top', 0.78 * fast, 0, -0.03);
-      setRotation('leg_left_bot', 0.32 + Math.max(0, fast) * 0.62, 0, 0);
-      setRotation('leg_right_bot', 0.32 + Math.max(0, fastOpp) * 0.62, 0, 0);
-      setRotation('leg_left_foot', -0.22 * fast, 0, 0);
-      setRotation('leg_right_foot', -0.22 * fastOpp, 0, 0);
+      setRotation('body', -0.18 + 0.04 * runImpact, 0.08 * fast, -0.05 * fast);
+      aimBone('arm_left_top', new THREE.Vector3(0.32, -0.7, -0.85 * fast), -0.22);
+      aimBone('arm_right_top', new THREE.Vector3(-0.32, -0.7, -0.85 * fastOpp), 0.22);
+      aimBone('arm_left_bot', new THREE.Vector3(0.16, -0.72, -0.7 * fastOpp));
+      aimBone('arm_right_bot', new THREE.Vector3(-0.16, -0.72, -0.7 * fast));
+      aimBone('leg_left_top', new THREE.Vector3(0.12, -0.58, 0.92 * fastOpp));
+      aimBone('leg_right_top', new THREE.Vector3(-0.12, -0.58, 0.92 * fast));
+      aimBone('leg_left_bot', new THREE.Vector3(0.06, -0.72, Math.max(0, fast) * 0.9));
+      aimBone('leg_right_bot', new THREE.Vector3(-0.06, -0.72, Math.max(0, fastOpp) * 0.9));
       break;
 
     case 'jump_airborne':
-      setRotation('body', -0.16 + 0.08 * wave, 0, 0.04 * pulse);
-      setRotation('arm_left_top', -0.58, 0, -0.62 + 0.13 * wave);
-      setRotation('arm_right_top', -0.58, 0, 0.62 - 0.13 * wave);
-      setRotation('arm_left_bot', -0.2, 0, 0);
-      setRotation('arm_right_bot', -0.2, 0, 0);
-      setRotation('leg_left_top', 0.72 + 0.1 * pulse, 0, -0.14);
-      setRotation('leg_right_top', 0.72 - 0.1 * pulse, 0, 0.14);
-      setRotation('leg_left_bot', 0.72, 0, 0);
-      setRotation('leg_right_bot', 0.72, 0, 0);
+      setRotation('body', -0.12 + 0.08 * wave, 0, 0.04 * pulse);
+      aimBone('arm_left_top', new THREE.Vector3(0.36, 0.9, -0.24 + 0.12 * wave), -0.18);
+      aimBone('arm_right_top', new THREE.Vector3(-0.36, 0.9, -0.24 - 0.12 * wave), 0.18);
+      aimBone('arm_left_bot', new THREE.Vector3(0.2, 0.92, -0.1));
+      aimBone('arm_right_bot', new THREE.Vector3(-0.2, 0.92, -0.1));
+      aimBone('leg_left_top', new THREE.Vector3(0.28, -0.45, 0.84 + 0.08 * pulse));
+      aimBone('leg_right_top', new THREE.Vector3(-0.28, -0.45, 0.84 - 0.08 * pulse));
+      aimBone('leg_left_bot', new THREE.Vector3(0.16, -0.74, 0.58));
+      aimBone('leg_right_bot', new THREE.Vector3(-0.16, -0.74, 0.58));
       break;
 
     case 'landing':
-      setRotation('body', 0.42 + 0.06 * Math.abs(pulse), 0, 0);
-      setRotation('arm_left_top', 0.36 + 0.06 * pulse, 0, -0.22);
-      setRotation('arm_right_top', 0.36 - 0.06 * pulse, 0, 0.22);
-      setRotation('arm_left_bot', -0.24, 0, 0);
-      setRotation('arm_right_bot', -0.24, 0, 0);
-      setRotation('leg_left_top', 0.72, 0, -0.12);
-      setRotation('leg_right_top', 0.72, 0, 0.12);
-      setRotation('leg_left_bot', 0.88 + 0.08 * Math.abs(pulse), 0, 0);
-      setRotation('leg_right_bot', 0.88 + 0.08 * Math.abs(pulse), 0, 0);
+      setRotation('body', 0.34 + 0.05 * Math.abs(pulse), 0, 0);
+      aimBone('arm_left_top', new THREE.Vector3(0.62, -0.62, 0.18), -0.18);
+      aimBone('arm_right_top', new THREE.Vector3(-0.62, -0.62, 0.18), 0.18);
+      aimBone('arm_left_bot', new THREE.Vector3(0.5, -0.82, 0.18));
+      aimBone('arm_right_bot', new THREE.Vector3(-0.5, -0.82, 0.18));
+      aimBone('leg_left_top', new THREE.Vector3(0.34, -0.42, 0.84));
+      aimBone('leg_right_top', new THREE.Vector3(-0.34, -0.42, 0.84));
+      aimBone('leg_left_bot', new THREE.Vector3(0.18, -0.58, 0.8));
+      aimBone('leg_right_bot', new THREE.Vector3(-0.18, -0.58, 0.8));
+      break;
+
+    case 'sitting_relax':
+      setRotation('body', 0.18 + 0.03 * wave, 0.05 * wave, 0);
+      aimBone('arm_left_top', new THREE.Vector3(0.55, -0.78, 0.12), -0.12);
+      aimBone('arm_right_top', new THREE.Vector3(-0.55, -0.78, 0.12), 0.12);
+      aimBone('arm_left_bot', new THREE.Vector3(0.4, -0.88, 0.1));
+      aimBone('arm_right_bot', new THREE.Vector3(-0.4, -0.88, 0.1));
+      aimBone('leg_left_top', new THREE.Vector3(0.22, -0.18, 0.98));
+      aimBone('leg_right_top', new THREE.Vector3(-0.22, -0.18, 0.98));
+      aimBone('leg_left_bot', new THREE.Vector3(0.12, -0.28, 0.96));
+      aimBone('leg_right_bot', new THREE.Vector3(-0.12, -0.28, 0.96));
       break;
 
     case 'thinking':
-      setRotation('arm_right_top', -0.72 + 0.07 * wave, 0.18, 0.24);
-      setRotation('arm_right_bot', -0.95 + 0.05 * pulse, 0.1, 0.08);
-      setRotation('arm_left_top', 0.14 * wave, 0, -0.12);
-      setRotation('arm_left_bot', -0.16, 0, 0);
+      aimBone('arm_right_top', new THREE.Vector3(-0.38, 0.64, 0.52 + 0.08 * wave), 0.2);
+      aimBone('arm_right_bot', new THREE.Vector3(0.18, 0.7, 0.42 + 0.05 * pulse));
+      aimBone('arm_left_top', new THREE.Vector3(0.55, -0.76, 0.12), -0.12);
+      aimBone('arm_left_bot', new THREE.Vector3(0.4, -0.88, 0.1));
       setRotation('head', 0.14 + 0.035 * pulse, -0.18, 0.045);
       break;
 
     case 'victory':
-      setRotation('arm_left_top', -0.68 + 0.08 * pulse, 0, -0.92 + 0.08 * wave);
-      setRotation('arm_right_top', -0.68 - 0.08 * pulse, 0, 0.92 - 0.08 * wave);
-      setRotation('arm_left_bot', -0.34, 0, 0);
-      setRotation('arm_right_bot', -0.34, 0, 0);
-      setRotation('leg_left_top', 0.06, 0, -0.18);
-      setRotation('leg_right_top', 0.06, 0, 0.18);
+      aimBone('arm_left_top', new THREE.Vector3(0.5, 0.86, 0.06 + 0.05 * wave), -0.18);
+      aimBone('arm_right_top', new THREE.Vector3(-0.5, 0.86, 0.06 - 0.05 * wave), 0.18);
+      aimBone('arm_left_bot', new THREE.Vector3(0.36, 0.92, 0.04));
+      aimBone('arm_right_bot', new THREE.Vector3(-0.36, 0.92, 0.04));
+      aimBone('leg_left_top', new THREE.Vector3(0.28, -0.94, 0.08));
+      aimBone('leg_right_top', new THREE.Vector3(-0.28, -0.94, 0.08));
       break;
 
     case 'pointing':
       setRotation('body', 0.02 * wave, 0.24 + 0.055 * wave, 0);
-      setRotation('arm_right_top', -0.18 + 0.025 * pulse, -0.36, 0.28);
-      setRotation('arm_right_bot', -0.08, 0, 0);
+      aimBone('arm_right_top', new THREE.Vector3(-0.96, 0.05, 0.36 + 0.04 * pulse), 0.08);
+      aimBone('arm_right_bot', new THREE.Vector3(-0.96, 0.04, 0.28));
       setRotation('arm_right_hand', 0, 0.08 * pulse, 0);
-      setRotation('arm_left_top', 0.34, 0, -0.22);
-      setRotation('arm_left_bot', -0.18, 0, 0);
+      aimBone('arm_left_top', new THREE.Vector3(0.46, -0.82, 0.2), -0.14);
+      aimBone('arm_left_bot', new THREE.Vector3(0.34, -0.9, 0.18));
       setRotation('head', 0.025 * pulse, 0.26, 0);
       break;
 
@@ -292,7 +319,7 @@ const applyProceduralMotion = (rig: BoneRig, poseId: string, elapsed: number) =>
 
 export default function GeomagHumanViewer({
   pose,
-  autoRotate = true
+  autoRotate = false
 }: GeomagHumanViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const objectRef = useRef<THREE.Object3D | null>(null);

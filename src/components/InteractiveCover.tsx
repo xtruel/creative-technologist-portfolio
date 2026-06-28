@@ -967,7 +967,7 @@ export default function InteractiveCover() {
         {/* 2x4 Grid with the 8 poses */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {geomagPosesData.map((pose) => {
-            const isAutoRotating = geomagAutoRotates[pose.id] !== false; // defaults to true
+            const isAutoRotating = geomagAutoRotates[pose.id] === true;
             return (
               <motion.div
                 key={pose.id}
