@@ -103,7 +103,7 @@ export const projectsData: ProjectItem[] = [
       website: 'https://ai.studio',
       download: '/downloads/glass_sculpture_v1.stl'
     },
-    image: '/src/assets/images/parametric_glass_sculpture_square_1782597633765.jpg',
+    image: '/assets/images/parametric_glass_sculpture_square_1782597633765.jpg',
     modelType: 'sculpture',
     colorTheme: 'from-blue-50 to-emerald-50/20'
   },
@@ -123,7 +123,7 @@ export const projectsData: ProjectItem[] = [
       website: 'https://ai.studio',
       download: '/downloads/mobius_ring.glb'
     },
-    image: '/src/assets/images/parametric_glass_sculpture_vertical_1782597646450.jpg',
+    image: '/assets/images/parametric_glass_sculpture_vertical_1782597646450.jpg',
     modelType: 'mobius',
     colorTheme: 'from-amber-50/80 to-stone-100/40'
   },
@@ -143,7 +143,7 @@ export const projectsData: ProjectItem[] = [
       website: 'https://ai.studio',
       download: '/downloads/voronoi_column.stl'
     },
-    image: '/src/assets/images/parametric_glass_sculpture_square_1782597633765.jpg',
+    image: '/assets/images/parametric_glass_sculpture_square_1782597633765.jpg',
     modelType: 'voronoi',
     colorTheme: 'from-neutral-50 to-neutral-200/30'
   }
@@ -272,7 +272,7 @@ export const archiveProjects: ArchiveItem[] = [
     techStack: 'ADOBE INDESIGN // SWISS GRID // 120GSM COTTON',
     specText: '60x90CM // MONOCHROME SERIF',
     mediaType: 'image',
-    image: '/src/assets/images/parametric_glass_sculpture_vertical_1782597646450.jpg',
+    image: '/assets/images/parametric_glass_sculpture_vertical_1782597646450.jpg',
     tags: ['Swiss Design', 'Typography', 'Grid Poster', 'Printmaking']
   },
   {
@@ -395,7 +395,7 @@ export const graphicDesignPosts: GraphicDesignPost[] = [
     description: 'A Swiss-poster composition mixing Italian cultural type, Japanese side notation, halftone architecture, and optical rhythm systems.',
     colorway: 'BLACK INK & SIGNAL YELLOW',
     alignment: 'Asymmetric',
-    image: '/src/assets/images/italy_pasta_rasta_swiss_poster.png'
+    image: '/assets/images/italy_pasta_rasta_swiss_poster.png'
   },
   {
     id: 'gd-02',
@@ -406,7 +406,7 @@ export const graphicDesignPosts: GraphicDesignPost[] = [
     description: 'A poster combining Japanese characters (Kanji/Kana) with industrial blueprints, simulating technical draft plans of spatial micro-capsules.',
     colorway: 'ELECTRIC BLUE & SIGNAL YELLOW',
     alignment: 'Left',
-    image: '/src/assets/images/tokyo_architecture_notebook_blue_yellow.png'
+    image: '/assets/images/tokyo_architecture_notebook_blue_yellow.png'
   },
   {
     id: 'gd-03',
@@ -417,7 +417,7 @@ export const graphicDesignPosts: GraphicDesignPost[] = [
     description: 'A red monochrome industrial poster study built around electrical infrastructure, dense wiring silhouettes, and Japanese technical notation.',
     colorway: 'SIGNAL RED & BLACK',
     alignment: 'Left',
-    image: '/src/assets/images/tokyo_architecture_notebook_red.png'
+    image: '/assets/images/tokyo_architecture_notebook_red.png'
   },
   {
     id: 'gd-04',
@@ -428,7 +428,7 @@ export const graphicDesignPosts: GraphicDesignPost[] = [
     description: 'A blue anti-style anime poster with graffiti lettering, high-energy splash forms, and a silhouetted rider over a red dragon figure.',
     colorway: 'CYAN BLUE & DRAGON RED',
     alignment: 'Justified',
-    image: '/src/assets/images/anti_style_digimon_dragon_poster.png'
+    image: '/assets/images/anti_style_digimon_dragon_poster.png'
   }
 ];
 
@@ -496,3 +496,4 @@ export function computeVoronoiMesh(vertices: Float32Array): THREE.BufferGeometry
     description: 'A developer tool for generating water-tight parametric meshes (STL/OBJ ready) directly within the web browser environment using client-side WebAssembly.'
   }
 ];
+

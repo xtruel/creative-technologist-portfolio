@@ -9,7 +9,7 @@ interface GeomagHumanViewerProps {
   autoRotate?: boolean;
 }
 
-const MODEL_URL = '/src/assets/models/neko-mask-character.glb';
+const MODEL_URL = '/assets/models/neko-mask-character-skeleton.glb';
 
 const getPreferredClipName = (pose: GeomagPose, clips: THREE.AnimationClip[]) => {
   if (clips.length === 0) return null;
@@ -382,3 +382,4 @@ export default function GeomagHumanViewer({
     </div>
   );
 }
+
