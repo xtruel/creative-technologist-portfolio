@@ -1,10 +1,17 @@
 services:
   - type: web
-    name: creative-technologist-portfolio
+    name: portfolio-qwerty3d
     runtime: static
+    plan: free
+    repo: https://github.com/xtruel/creative-technologist-portfolio
+    branch: main
     buildCommand: npm ci && npm run build
-    staticPublishPath: dist
-    pullRequestPreviewsEnabled: true
+    staticPublishPath: ./dist
+    previews:
+      generation: manual
+    envVars:
+      - key: NODE_VERSION
+        value: 22
     routes:
       - type: rewrite
         source: /*
