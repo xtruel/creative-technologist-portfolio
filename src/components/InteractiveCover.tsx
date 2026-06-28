@@ -249,7 +249,6 @@ export default function InteractiveCover() {
   const [activeCompIndex, setActiveCompIndex] = useState<number>(0);
   const [showBlueprint, setShowBlueprint] = useState<boolean>(true);
   const [showGridLines, setShowGridLines] = useState<boolean>(true);
-  const [isPosterMode, setIsPosterMode] = useState<boolean>(false);
   const [designerMode, setDesignerMode] = useState<boolean>(false);
   const [sketchOpacity, setSketchOpacity] = useState<number>(0.25);
   
@@ -320,16 +319,6 @@ export default function InteractiveCover() {
     const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
     const y = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
     setParallax({ x: x * 15, y: y * 15 });
-  };
-
-  const resetInteractiveParams = () => {
-    setRotationX(0);
-    setRotationY(0);
-    setFocalDepth(35);
-    setLightingAngle(45);
-    setGridCount(12);
-    setParallax({ x: 0, y: 0 });
-    setSketchOpacity(0.25);
   };
 
   // Autoplay rotation or light angle when user does nothing (subtle animation)
@@ -534,16 +523,6 @@ export default function InteractiveCover() {
               </button>
             ))}
           </div>
-
-          <button
-            onClick={() => setIsPosterMode(!isPosterMode)}
-            className={`p-1.5 rounded border border-studio-900/10 transition-all ${
-              isPosterMode ? 'bg-studio-950 text-white border-studio-950' : 'bg-white hover:bg-neutral-100 text-studio-950'
-            }`}
-            title={isPosterMode ? "Show Lab Controls" : "Enter Pure Poster Mode"}
-          >
-            {isPosterMode ? <Maximize2 size={13} /> : <Minimize2 size={13} />}
-          </button>
         </div>
       </header>
 
@@ -551,7 +530,7 @@ export default function InteractiveCover() {
       <main className="flex-grow w-full max-w-7xl mx-auto px-6 md:px-12 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20 relative">
         
         {/* Left Column: Bold Editorial Titles (6 cols) */}
-        <div className="lg:col-span-5 flex flex-col justify-center h-full select-none z-20">
+        <div className="lg:col-span-7 flex flex-col justify-center h-full select-none z-20">
           
           {/* Tagline / Context with subtle staggering */}
           <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-neutral-500 mb-4 flex items-center space-x-2">
@@ -648,298 +627,6 @@ export default function InteractiveCover() {
             </button>
           </div>
         </div>
-
-        {/* Center Column: Interactive 3D CGI Sculpture Glass Stage (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col items-center justify-center relative min-h-[420px] lg:min-h-[500px]">
-          
-          {/* Subtle Ambient Light Cone Simulator */}
-          <div 
-            className="absolute w-[350px] h-[350px] rounded-full blur-[80px] pointer-events-none transition-all duration-1000 opacity-60 mix-blend-multiply"
-            style={{ 
-              background: `radial-gradient(circle, rgba(230,230,245,0.8) 0%, rgba(250,250,255,0) 70%)`,
-              transform: `translate(${parallax.x * 2}px, ${parallax.y * 2}px) rotate(${lightingAngle}deg)`,
-            }}
-          />
-
-          {/* Main Artwork Container with 3D Parallax */}
-          <div 
-            className="glass-panel relative p-6 rounded-2xl group cursor-pointer transition-all duration-300 hover:shadow-2xl"
-            style={{
-              transform: `perspective(1000px) rotateX(${parallax.y + rotationX}deg) rotateY(${parallax.x + rotationY}deg)`,
-              transformStyle: 'preserve-3d'
-            }}
-          >
-            {/* Background elements representing Frosted Glass layout */}
-            <div className="absolute -inset-8 border border-black/10 rounded-full rotate-45 pointer-events-none transition-transform duration-500 group-hover:scale-105" />
-            <div className="absolute -inset-4 border border-black/5 pointer-events-none transition-transform duration-500 group-hover:rotate-12" />
-            
-            {/* Real Chrome Sphere Accent (Frosted Glass theme core element) */}
-            <div className="absolute -top-6 -right-6 w-14 h-14 chrome-sphere rounded-full z-20 pointer-events-none transition-all duration-300 group-hover:scale-110" />
-
-            {/* Corner dimension markers */}
-            <div className="absolute top-2 left-2 font-mono text-[8px] text-neutral-400 z-10">P_COORD: 0x2A</div>
-            <div className="absolute top-2 right-2 font-mono text-[8px] text-neutral-400 z-10">REFRACT_IND: 1.54</div>
-            <div className="absolute bottom-2 left-2 font-mono text-[8px] text-neutral-400 z-10">Z_DEPTH: {focalDepth * 10}MM</div>
-            <div className="absolute bottom-2 right-2 font-mono text-[8px] text-neutral-400 z-10">ROT_Y: {Math.round(parallax.x + rotationY)}°</div>
-
-            {/* Simulated focal blur overlay */}
-            <div className="relative overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 max-w-full z-10">
-              <img 
-                src={activeComp.imageSrc} 
-                alt={activeComp.name} 
-                referrerPolicy="no-referrer"
-                className="w-full max-w-[320px] aspect-[3/4] object-cover transition-all duration-700 ease-out select-none pointer-events-none"
-                style={{
-                  filter: `blur(${focalDepth / 30}px) contrast(1.02)`,
-                  transform: `scale(${1 + Math.abs(parallax.x) / 300})`
-                }}
-              />
-
-              {/* Dynamic reflection shine lines that move with cursor */}
-              <div 
-                className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none mix-blend-overlay transition-transform duration-100 ease-out"
-                style={{
-                  transform: `translateX(${parallax.x * 12}px) translateY(${parallax.y * 12}px)`
-                }}
-              />
-            </div>
-
-            {/* Overlaid dimensional measurement vectors (highly tech-chic) */}
-            <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex flex-col items-center space-y-1">
-              <div className="w-1 h-8 bg-neutral-400/50" />
-              <span className="font-mono text-[7px] rotate-90 text-neutral-500 uppercase">height_scale</span>
-              <div className="w-1 h-8 bg-neutral-400/50" />
-            </div>
-
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-1">
-              <div className="w-8 h-[1px] bg-neutral-400/50" />
-              <span className="font-mono text-[7px] text-neutral-500 uppercase">width_span</span>
-              <div className="w-8 h-[1px] bg-neutral-400/50" />
-            </div>
-          </div>
-
-          {/* Interactive Tilt Prompt */}
-          <div className="absolute -bottom-10 flex items-center space-x-1.5 font-mono text-[8px] tracking-widest text-neutral-400 uppercase">
-            <Compass size={10} className="animate-spin" style={{ animationDuration: '8s' }} />
-            <span>Interactive CGI Viewport: Hover or drag to orbit</span>
-          </div>
-
-        </div>
-
-        {/* Right Column: Interactive Parameter sliders & stats (3 cols) */}
-        <AnimatePresence>
-          {!isPosterMode && (
-            <motion.div 
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 40 }}
-              transition={{ type: 'spring', stiffness: 100 }}
-              className="lg:col-span-3 flex flex-col space-y-6 h-full z-20"
-            >
-              
-              {/* Box A: CGI Specs */}
-              <div className="glass-panel p-5 rounded-xl bg-white/30 backdrop-blur-md shadow-sm">
-                <div className="flex items-center justify-between mb-4 pb-2 border-b border-studio-900/5">
-                  <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-studio-950 flex items-center space-x-1">
-                    <Sliders size={11} />
-                    <span>Exhibition Metadata</span>
-                  </span>
-                  <span className="font-mono text-[8px] px-1.5 py-0.5 bg-neutral-100/50 rounded text-neutral-500">SYSTEM READY</span>
-                </div>
-
-                <div className="space-y-3 font-mono text-[10px] text-neutral-600">
-                  <div className="flex justify-between">
-                    <span className="text-neutral-400">ACTIVE SCULPTURE</span>
-                    <span className="text-studio-950 font-bold">{activeCompIndex === 0 ? "COMP_01" : "COMP_02"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-neutral-400">VIRTUAL FOCAL LENS</span>
-                    <span className="text-studio-950">{activeComp.technicalSpecs.focusLength}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-neutral-400">SIMULATED APERTURE</span>
-                    <span className="text-studio-950">{activeComp.technicalSpecs.aperture}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-neutral-400">CGI RENDER ENGINE</span>
-                    <span className="text-studio-950 font-medium">{activeComp.technicalSpecs.renderer}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-neutral-400">CONVERGENCE LEVEL</span>
-                    <span className="text-studio-950">{activeComp.technicalSpecs.samples}</span>
-                  </div>
-                </div>
-
-                {/* Micro-diagram representing focal points */}
-                <div className="mt-4 p-2.5 bg-neutral-50/50 rounded border border-neutral-200/50 flex items-center justify-between">
-                  <div className="flex space-x-0.5 items-end h-6">
-                    {Array.from({ length: 15 }).map((_, i) => {
-                      // Sine-like bar heights
-                      const height = Math.abs(Math.sin((i - 7) * 0.4)) * 20 + 4;
-                      return (
-                        <div 
-                          key={i} 
-                          className="w-1 bg-studio-950/30 rounded-t"
-                          style={{ 
-                            height: `${height}px`,
-                            backgroundColor: i === Math.floor(focalDepth / 7) ? '#000' : undefined 
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="text-right font-mono text-[8px] text-neutral-500 leading-tight">
-                    <div>FOCUS RATIO</div>
-                    <div className="font-bold text-studio-950">{focalDepth}% (SHALLOW)</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Box B: Variable Customizers */}
-              <div className="glass-panel p-5 rounded-xl bg-white/30 backdrop-blur-md shadow-sm flex-grow">
-                <div className="flex items-center justify-between mb-4 pb-2 border-b border-studio-900/5">
-                  <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-studio-950 flex items-center space-x-1">
-                    <Settings size={11} />
-                    <span>Real-Time Modifiers</span>
-                  </span>
-                  <button 
-                    onClick={resetInteractiveParams}
-                    className="text-neutral-400 hover:text-studio-950 transition-colors"
-                    title="Reset parameters"
-                  >
-                    <RotateCcw size={10} />
-                  </button>
-                </div>
-
-                {/* Sliders */}
-                <div className="space-y-4">
-                  
-                  {/* Slider 1: Focal Depth */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between font-mono text-[9px] text-neutral-500">
-                      <span>FOCAL DISTANCE [Z]</span>
-                      <span className="text-studio-950 font-bold">{focalDepth}mm</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="100" 
-                      value={focalDepth}
-                      onChange={(e) => setFocalDepth(Number(e.target.value))}
-                      className="w-full accent-neutral-950 cursor-ew-resize opacity-80 hover:opacity-100 transition-opacity"
-                    />
-                  </div>
-
-                  {/* Slider 2: Global Light Direction */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between font-mono text-[9px] text-neutral-500">
-                      <span>LIGHTING FIELD ANGLE</span>
-                      <span className="text-studio-950 font-bold">{Math.round(lightingAngle)}°</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="360" 
-                      value={Math.round(lightingAngle)}
-                      onChange={(e) => setLightingAngle(Number(e.target.value))}
-                      className="w-full accent-neutral-950 cursor-ew-resize opacity-80 hover:opacity-100 transition-opacity"
-                    />
-                  </div>
-
-                  {/* Slider 3: Grid Density */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between font-mono text-[9px] text-neutral-500">
-                      <span>SWISS GRID DENSITY</span>
-                      <span className="text-studio-950 font-bold">{gridCount} columns</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min="4" 
-                      max="24" 
-                      value={gridCount}
-                      onChange={(e) => setGridCount(Number(e.target.value))}
-                      className="w-full accent-neutral-950 cursor-ew-resize opacity-80 hover:opacity-100 transition-opacity"
-                    />
-                  </div>
-
-                  {/* Slider 4: Graffiti Sketch Opacity */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between font-mono text-[9px] text-neutral-500">
-                      <span>GRAFFITI SKETCH LAYER</span>
-                      <span className="text-studio-950 font-bold">{Math.round(sketchOpacity * 100)}%</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="1" 
-                      step="0.05"
-                      value={sketchOpacity}
-                      onChange={(e) => setSketchOpacity(Number(e.target.value))}
-                      className="w-full accent-neutral-950 cursor-ew-resize opacity-80 hover:opacity-100 transition-opacity"
-                    />
-                  </div>
-
-                  {/* Sliders manual offsets for 3D simulation */}
-                  <div className="grid grid-cols-2 gap-2 pt-1">
-                    <div className="space-y-1">
-                      <label className="block font-mono text-[8px] text-neutral-400">ROTATE X</label>
-                      <input 
-                        type="range" 
-                        min="-45" 
-                        max="45" 
-                        value={rotationX}
-                        onChange={(e) => setRotationX(Number(e.target.value))}
-                        className="w-full accent-neutral-950 cursor-ew-resize"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="block font-mono text-[8px] text-neutral-400">ROTATE Y</label>
-                      <input 
-                        type="range" 
-                        min="-45" 
-                        max="45" 
-                        value={rotationY}
-                        onChange={(e) => setRotationY(Number(e.target.value))}
-                        className="w-full accent-neutral-950 cursor-ew-resize"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Checkbox buttons for overlays */}
-                  <div className="pt-2 flex flex-col space-y-1.5">
-                    <button
-                      onClick={() => setShowGridLines(!showGridLines)}
-                      className={`flex items-center justify-between px-3 py-1.5 rounded text-[9px] font-mono border transition-all ${
-                        showGridLines 
-                          ? 'bg-neutral-900 text-white border-neutral-900' 
-                          : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400'
-                      }`}
-                    >
-                      <span>Show Grid Layout Lines</span>
-                      <Grid size={10} />
-                    </button>
-                    <button
-                      onClick={() => setDesignerMode(!designerMode)}
-                      className={`flex items-center justify-between px-3 py-1.5 rounded text-[9px] font-mono border transition-all ${
-                        designerMode 
-                          ? 'bg-[#FF2E51] text-white border-[#FF2E51]' 
-                          : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400'
-                      }`}
-                    >
-                      <span>Designer Spec Layer</span>
-                      <span className="text-[7.5px] font-bold">CTRL+SHIFT+D</span>
-                    </button>
-                  </div>
-
-                </div>
-
-                <div className="mt-4 p-3 bg-neutral-100/50 rounded-lg text-[9px] font-mono text-neutral-400 leading-relaxed text-center italic border border-dashed border-neutral-200">
-                  "Simulating refraction algorithms, light volumetric dispersion, and material physical bounds dynamically."
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
       </main>
 
@@ -1171,13 +858,13 @@ export default function InteractiveCover() {
         <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12 flex flex-col md:flex-row md:items-end justify-between">
           <div>
             <div className="font-mono text-[9px] uppercase tracking-[0.25em] text-neutral-400 mb-2">
-              SECTION 09 // HISTORIC CABINET RETROSPECTIVE
+              SECTION 09 // INDIE LAB // ITCH.IO RELEASES
             </div>
             <h2 className="font-serif text-4xl md:text-5xl font-normal tracking-tight text-studio-950">
-              The Retrospective <span className="italic font-light">Archive</span>
+              Released <span className="italic font-light">Work</span> on itch.io
             </h2>
             <p className="font-sans text-neutral-500 text-xs md:text-sm mt-2 font-light max-w-xl leading-relaxed">
-              Chronological drawer indices representing early logo drafts, spray can street throw-ups, organic branching fractal experiments, and legacy coding repositories. Drag or use mouse wheel to slide drawers.
+              Playable browser tools and toys published as <span className="font-medium text-neutral-700">nosense_3d</span> — 2D→3D conversion, audio scratch decks, generative drawing, lo-fi drum loops and live webcam ASCII. Click a card to open it on itch.io. Drag or use the mouse wheel to slide.
             </p>
           </div>
 
@@ -1408,7 +1095,7 @@ export default function InteractiveCover() {
                             rel="noopener noreferrer"
                             className="font-mono text-[8.5px] font-bold border border-neutral-950 text-neutral-950 px-3 py-1.5 rounded-full hover:bg-neutral-100 transition-colors flex items-center space-x-1"
                           >
-                            <span>LIVE_DEMO</span>
+                            <span>PLAY ON ITCH.IO</span>
                             <ExternalLink size={10} />
                           </a>
                         )}

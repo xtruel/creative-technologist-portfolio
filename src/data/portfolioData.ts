@@ -208,112 +208,74 @@ export const downloadLibrary: DownloadItem[] = [
 
 export const archiveProjects: ArchiveItem[] = [
   {
-    id: 'arch-01',
-    exhibitId: 'CAB-01',
-    year: '2021',
-    category: 'LEGACY WEBSITE // WEBGL',
-    title: 'Neo-Tokyo Web Portal',
-    description: 'An interactive 3D portal representing futuristic cybernetic architecture, engineered with native WebGL, custom matrix transformations, and direct mouse coordinates tracking.',
-    techStack: 'HTML5 // WEBGL // VANILLA JS',
-    specText: '9000 VERTICES // DIRECT DOM BINDING',
-    mediaType: 'code',
-    tags: ['WebGL', 'GLSL Shaders', 'Cyberpunk', 'Creative Coding'],
-    links: {
-      github: 'https://github.com/qwerty3D_/neo-tokyo-portal',
-      website: 'https://ai.studio'
-    }
-  },
-  {
-    id: 'arch-02',
-    exhibitId: 'CAB-02',
-    year: '2022',
-    category: 'ANTI-STYLE GRAFFITI',
-    title: 'Milano Centrali Underpass',
-    description: 'A study on architectural concrete surfaces and aggressive, raw typography layouts. Hand-crafted using spray paints, examining how spatial layout interacts with concrete typography.',
-    techStack: 'SPRAY PAINT // RAW CONCRETE // 1:√2 CANVAS',
-    specText: 'SCALE 10M x 3.5M // ACID CHROME',
-    mediaType: 'graffiti',
-    tags: ['Street Art', 'Throw-up', 'Spray Can', 'Concrete study']
-  },
-  {
-    id: 'arch-03',
-    exhibitId: 'CAB-03',
-    year: '2023',
-    category: 'HARD SURFACE MODELING',
-    title: 'Parametric Housing Module',
-    description: 'Structural component proposals for sustainable micro-housing modules, utilizing interlocking sub-assemblies calculated with architectural Grasshopper algorithms.',
-    techStack: 'GRASSHOPPER // RHINO 3D // OBJ MESH',
-    specText: '34 INTERLOCKING CNC PARTS',
-    mediaType: '3d',
-    tags: ['CNC Milling', 'Grasshopper', 'Modular', 'Architecture'],
-    links: {
-      download: '/downloads/housing_module.stl'
-    }
-  },
-  {
-    id: 'arch-04',
-    exhibitId: 'CAB-04',
-    year: '2023',
-    category: 'CREATIVE CODING',
-    title: 'L-System Flora Synthesizer',
-    description: 'An implementation of complex fractal plant growth models using context-free Lindenmayer grammars. Renders delicate branching structures in a customizable physical canvas.',
-    techStack: 'CANVAS API // RUST // WEBASSEMBLY',
-    specText: 'DEPTH DEPLETION RECURSION // 8 LEVELS',
-    mediaType: 'illustration',
-    tags: ['L-System', 'Fractal', 'WASM', 'Procedural']
-  },
-  {
-    id: 'arch-05',
-    exhibitId: 'CAB-05',
-    year: '2024',
-    category: 'GRAPHIC DESIGN',
-    title: 'Zurich Typography Grid Poster',
-    description: 'A minimalist print editorial focusing on asymmetric alignments, extreme leading, and tight character tracking. Printed on archival cotton paper.',
-    techStack: 'ADOBE INDESIGN // SWISS GRID // 120GSM COTTON',
-    specText: '60x90CM // MONOCHROME SERIF',
+    id: 'itch-3dkun',
+    exhibitId: 'ITCH-01',
+    year: '2025',
+    category: 'BROWSER TOOL // 2D → 3D',
+    title: '3d-KUN',
+    description: 'Turn any 2D image into a solid, 3D-printable model right in the browser — contours, relief and multicolor, fully offline.',
+    techStack: 'JS // CANVAS // MESH EXPORT',
+    specText: 'IMAGE → STL // IN-BROWSER',
     mediaType: 'image',
-    image: '/assets/images/parametric_glass_sculpture_vertical_1782597646450.jpg',
-    tags: ['Swiss Design', 'Typography', 'Grid Poster', 'Printmaking']
+    image: 'https://img.itch.zone/aW1nLzI4MDg3NDYwLnBuZw==/original/Tk1v5i.png',
+    tags: ['3D Print', 'Tool', 'Browser'],
+    links: { website: 'https://nosense-3d.itch.io/3d-kun-3d-estruder-from-2d-images' }
   },
   {
-    id: 'arch-06',
-    exhibitId: 'CAB-06',
+    id: 'itch-djsystem',
+    exhibitId: 'ITCH-02',
+    year: '2025',
+    category: 'BROWSER TOY // AUDIO',
+    title: 'Real Gamepad DJ-System',
+    description: 'Turns your controller — or mouse / finger — into a hands-on scratch turntable, with a lo-fi / boom-bap beat looping while you scratch a sample.',
+    techStack: 'WEB AUDIO // GAMEPAD API // JS',
+    specText: 'SCRATCH ENGINE // LO-FI LOOPS',
+    mediaType: 'image',
+    image: 'https://img.itch.zone/aW1hZ2UvNDcwNTMwOS8yODAzNzk0Ny5wbmc=/347x500/wUGGnu.png',
+    tags: ['Audio', 'Gamepad', 'DJ'],
+    links: { website: 'https://nosense-3d.itch.io/real-gamepad-dj-system' }
+  },
+  {
+    id: 'itch-autodraw',
+    exhibitId: 'ITCH-03',
+    year: '2025',
+    category: 'BROWSER TOOL // GENERATIVE',
+    title: 'Auto Image Drawer',
+    description: 'Drop in any image and watch a cursor sketch it back line by line — three drawing styles and vertical video export for social.',
+    techStack: 'CANVAS // VECTOR STROKES // JS',
+    specText: 'IMAGE → SELF-DRAWING VIDEO',
+    mediaType: 'image',
+    image: 'https://img.itch.zone/aW1nLzI3OTI0NTcxLnBuZw==/original/p6%2FCRn.png',
+    tags: ['Generative', 'Animation', 'Export'],
+    links: { website: 'https://nosense-3d.itch.io/auto-image-drawer-watch-your-image-draw-itself' }
+  },
+  {
+    id: 'itch-drumz',
+    exhibitId: 'ITCH-04',
     year: '2024',
-    category: 'EXHIBITION VIDEO SCREEN',
-    title: 'Glass Dispersion Motion Loop',
-    description: 'A slow-motion video study of light dispersion inside double-refractive glass. Rendered at 60fps in Octane and compiled for fluid digital display projections.',
-    techStack: 'OCTANE RENDER // ADOBE PREMIERE // H.264',
-    specText: '4K MP4 // 60 FPS // 1.52 IOR',
-    mediaType: 'video',
-    mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41718-large.mp4',
-    tags: ['Motion Graphics', 'Refraction Loop', 'Video Art', 'Octane']
+    category: 'BROWSER TOY // MUSIC',
+    title: 'DRUMZ Lofi',
+    description: 'Free lo-fi / boom-bap / Dilla-style drum loop generator with a colored MIDI piano roll, cassette animation and MIDI / WAV / MP3 export.',
+    techStack: 'WEB AUDIO // MIDI // JS',
+    specText: 'LOOP GENERATOR // MIDI EXPORT',
+    mediaType: 'image',
+    image: 'https://img.itch.zone/aW1hZ2UvNDA1ODIwOS8yNDE5NjM4Mi5wbmc=/347x500/GMiLkr.png',
+    tags: ['Music', 'MIDI', 'Generator'],
+    links: { website: 'https://nosense-3d.itch.io/drumzlofidrumloops' }
   },
   {
-    id: 'arch-07',
-    exhibitId: 'CAB-07',
-    year: '2025',
-    category: 'EXTERNAL CONTRIBUTION',
-    title: 'Awwwards Exhibition Feature',
-    description: 'Award-winning digital showcase featuring our interactive parametric glass viewer, recognized for design innovation, spatial interactive performance, and high-end typography.',
-    techStack: 'HTML5 // WEBGL // FRAMER MOTION',
-    specText: 'SITES OF THE DAY // SCORE 8.92',
-    mediaType: 'external',
-    tags: ['Awwwards', 'Exhibition Design', 'Interactive UI', 'Feature'],
-    links: {
-      website: 'https://www.awwwards.com'
-    }
-  },
-  {
-    id: 'arch-08',
-    exhibitId: 'CAB-08',
-    year: '2025',
-    category: 'LOGO ARCHIVE',
-    title: 'Parametric Branding Identity',
-    description: 'A collection of mathematical logos and high-contrast wordmarks developed for spatial computing projects, showcasing modular geometries and custom letterforms.',
-    techStack: 'VECTOR ENGINE // SVG ILLUSTRATOR // PATHS',
-    specText: '12 LOGO SETS // MONOCHROME VECTORS',
-    mediaType: 'logo',
-    tags: ['Branding', 'Vector Logo', 'Identity Design', 'Symbolism']
+    id: 'itch-webcamascii',
+    exhibitId: 'ITCH-05',
+    year: '2024',
+    category: 'BROWSER TOY // REAL-TIME',
+    title: 'webcam—ascii',
+    description: 'Turns your webcam feed into live ASCII art, entirely in the browser — no installs, no accounts.',
+    techStack: 'GETUSERMEDIA // CANVAS // JS',
+    specText: 'LIVE CAM → ASCII',
+    mediaType: 'image',
+    image: 'https://img.itch.zone/aW1nLzIyNzEzNTQ4LnBuZw==/347x500/4o16JB.png',
+    tags: ['ASCII', 'Webcam', 'Real-time'],
+    links: { website: 'https://nosense-3d.itch.io/webcam-ascii' }
   }
 ];
 
