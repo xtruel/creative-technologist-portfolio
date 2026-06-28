@@ -564,7 +564,7 @@ export default function InteractiveCover() {
               />
             </div>
             <div className="font-mono text-left leading-none">
-              <div className="text-[8px] text-neutral-400 uppercase tracking-widest mb-1 font-semibold">EXHIBITION_DEVELOPER</div>
+              <div className="text-[8px] text-neutral-400 uppercase tracking-widest mb-1 font-semibold">SENIOR FULL STACK DEVELOPER</div>
               <div className="text-xs font-bold text-studio-950 uppercase tracking-wider mb-0.5">Eugenio Longhitano</div>
               <div className="text-[9px] text-neutral-500 font-medium">@qwerty3D_</div>
             </div>
@@ -572,9 +572,9 @@ export default function InteractiveCover() {
 
           {/* Description Block */}
           <p className="font-sans text-neutral-600 text-sm md:text-base font-light leading-relaxed max-w-md mb-8 border-l border-studio-950/20 pl-4">
-            {lang === 'EN' && "At the intersection of design, code, and physical light. Crafting premium digital installations, architectural real-time CGI, and responsive experiences."}
-            {lang === 'IT' && "All'intersezione tra design, codice e luce fisica. Creazione di installazioni digitali premium, CGI in tempo reale e installazioni interattive."}
-            {lang === 'JP' && "デザイン、コード、そして物理的な光が交差する場所。プレミアムなデジタルインスタレーション、リアルタイムCGI、感覚的なインタラクティブ体験を創造します。"}
+            {lang === 'EN' && "Senior Full Stack Developer building software, professional websites and cross-platform apps end-to-end — Python, Java, C and modern web. Strong on problem solving, optimization and AI integration."}
+            {lang === 'IT' && "Senior Full Stack Developer: sviluppo software, siti web professionali e app multipiattaforma end-to-end — Python, Java, C e tecnologie web moderne. Problem solving, ottimizzazione e integrazione AI."}
+            {lang === 'JP' && "ソフトウェア、プロ向けWebサイト、マルチプラットフォームアプリをエンドツーエンドで開発するシニア・フルスタック開発者。Python・Java・C と最新Web技術、問題解決・最適化・AI統合を得意とする。"}
           </p>
 
           {/* Multidisciplinary Skills / Tag Grid containing the EXACT requested terms for the chosen language */}
@@ -1389,11 +1389,11 @@ export default function InteractiveCover() {
                 The Career <span className="italic font-light">Timeline</span>
               </h2>
               <p className="font-sans text-neutral-500 text-xs md:text-sm mt-3 font-light leading-relaxed">
-                A multi-disciplinary path spanning software engineering, WebGL, CAD fabrication, street graffiti studies, and editorial visual design. Click tabs to filter milestones.
+                Senior full stack developer — software, web and cross-platform apps, plus indie browser tools and real-time 3D / creative coding. Click tabs to filter milestones.
               </p>
             </div>
             <div className="font-mono text-[10px] text-neutral-400 uppercase mt-4 md:mt-0">
-              MILESTONE MATRIX: 05 STAGES RECORDED
+MILESTONE MATRIX: 03 STAGES RECORDED
             </div>
           </div>
 

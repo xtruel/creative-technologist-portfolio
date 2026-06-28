@@ -281,68 +281,43 @@ export const archiveProjects: ArchiveItem[] = [
 
 export const timelineData: TimelineItem[] = [
   {
-    year: '2026',
-    title: 'Creative Technologist // Director',
-    role: 'qwerty3D_ Studio',
-    discipline: 'Research',
-    description: 'Developing high-fidelity CGI installations, physical computing artifacts, and real-time interactive browser engines for design museums.',
-    location: 'Milano, IT',
+    year: '2020 — Present',
+    title: 'Freelance Full Stack Developer',
+    role: 'Self-employed // qwerty3D_',
+    discipline: 'Freelance',
+    description: 'Senior full stack developer building software, professional websites and cross-platform apps end-to-end, with strong focus on problem solving and code optimization.',
+    location: 'Italia',
     details: [
-      'Engineered interactive WebGL visualizers for Swiss design studios.',
-      'Released parametric models for high-resolution resin printing.',
-      'Collaborated on architectural spatial studies utilizing computer-generated physics simulations.'
+      'Full end-to-end development of custom applications and software.',
+      'Professional websites and digital platforms.',
+      'Debugging, optimization and refactoring of existing codebases.',
+      'Cross-platform delivery: Android (APK), iOS, macOS, Windows.'
     ]
   },
   {
-    year: '2025',
-    title: 'Creative Developer // Programmer',
-    role: 'R&D Lab Zurich',
+    year: '2024 — Present',
+    title: 'Indie Browser Tools',
+    role: 'nosense_3d // itch.io',
     discipline: 'Programming',
-    description: 'Researched parametric algorithms and WebGL rendering optimizations, focusing on interactive 3D viewport pipelines on web frames.',
-    location: 'Zurich, CH',
+    description: 'Self-published, free browser tools and toys written in JavaScript, running entirely client-side with no installs.',
+    location: 'Web',
     details: [
-      'Designed and coded the core interactive architecture for structural loading visualizers.',
-      'Reduced WebGL render times by 35% using raw WebGL shaders and instanced geometry.',
-      'Conducted computational research on spatial division matrices (Voronoi, Delaunay).'
+      '3d-KUN — turn any 2D image into a 3D-printable model in the browser.',
+      'Real Gamepad DJ-System & DRUMZ Lofi — Web Audio scratch deck and drum-loop generator with MIDI export.',
+      'Auto Image Drawer & webcam—ascii — generative drawing and live webcam ASCII art.'
     ]
   },
   {
-    year: '2024',
-    title: 'Architectural CGI & 3D Artist',
-    role: 'Exhibition Design',
+    year: '2026',
+    title: 'Creative Coding & Real-Time 3D',
+    role: 'Portfolio // qwerty3D_',
     discipline: '3D',
-    description: 'Rendered luxury glass refractions, light simulations, and parametric hard-surface installations for design houses.',
-    location: 'Tokyo, JP',
+    description: 'Real-time WebGL, generative graphics and AI-assisted workflows — the engine behind this portfolio.',
+    location: 'Web',
     details: [
-      'Evolved custom glass dispersion shader models for photorealistic Cycles casting.',
-      'Designed structural assets exported to USDZ for Apple product augmented-reality presentations.',
-      'Formulated procedural material maps based on chemical weathering algorithms.'
-    ]
-  },
-  {
-    year: '2023',
-    title: 'Graffiti Researcher & Visual Artist',
-    role: 'Independent Study',
-    discipline: 'Graffiti',
-    description: 'Conducted field research on Milan anti-style typography movements, documenting the raw composition and letterform weight variations of street tags.',
-    location: 'Milan / Berlin',
-    details: [
-      'Published academic notebooks analyzing throw-up structural guides.',
-      'Vectorized aggressive spray tag typographies into open-source fonts.',
-      'Exhibited graffiti sketchbook studies focusing on architectural wireframes.'
-    ]
-  },
-  {
-    year: '2022',
-    title: 'Graphic Designer & Illustrator',
-    role: 'Editorial Agency',
-    discipline: 'Design',
-    description: 'Applied Swiss grid alignments, asymmetric text ratios, and Japanese graphic pairings for fine art publications.',
-    location: 'Milano, IT',
-    details: [
-      'Formulated editorial layouts using baseline grids and golden ratio column structures.',
-      'Designed vector-based illustration guides detailing perspective planes.',
-      'Supervised high-contrast screenprint editions on heavyweight cotton sheets.'
+      'Neko mask character rigged in Blender with 8 baked animations, played back via Three.js / WebGL.',
+      'Java ASCII Studio — 14 procedural animations (donut, plasma, Mandelbrot, fire, Game of Life...).',
+      'React + TypeScript UI with motion design, AI integration and continuous deploy.'
     ]
   }
 ];

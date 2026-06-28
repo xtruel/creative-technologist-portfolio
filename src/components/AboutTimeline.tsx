@@ -5,7 +5,7 @@ import { Calendar, MapPin, ChevronRight, CornerDownRight } from 'lucide-react';
 export default function AboutTimeline() {
   const [activeFilter, setActiveFilter] = useState<string>('ALL');
 
-  const disciplines = ['ALL', 'Programming', 'Graffiti', 'Design', '3D', 'Research'];
+  const disciplines = ['ALL', 'Freelance', 'Programming', '3D'];
 
   const filteredTimeline = activeFilter === 'ALL' 
     ? timelineData 
