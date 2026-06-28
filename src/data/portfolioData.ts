@@ -153,56 +153,56 @@ export const downloadLibrary: DownloadItem[] = [
   {
     name: 'Nosense 3D on itch.io',
     category: 'Itch.io',
-    details: 'Main hub for experimental indie games, playable prototypes, strange 3D sketches, and small interactive releases.',
+    details: 'Main hub for all the playable browser tools and experiments, released free under the nosense_3d page.',
     fileSize: 'LIVE PAGE',
     license: 'PUBLIC PROFILE',
     version: 'ACTIVE',
     fileUrl: 'https://nosense-3d.itch.io/'
   },
   {
-    name: 'Browser Game Experiments',
-    category: 'Game',
-    details: 'Small web-playable ideas focused on movement, mood, lo-fi 3D scenes, character tests, and fast creative iteration.',
-    fileSize: 'HTML5',
-    license: 'PLAYABLE',
-    version: 'LAB',
-    fileUrl: 'https://nosense-3d.itch.io/'
-  },
-  {
-    name: 'Interactive Tool Prototypes',
+    name: '3d-KUN',
     category: 'Tool',
-    details: 'Utility-style experiments for procedural visuals, terminal-like interfaces, image systems, and real-time creative controls.',
-    fileSize: 'WEB TOOL',
-    license: 'EXPERIMENTAL',
-    version: 'WIP',
-    fileUrl: 'https://nosense-3d.itch.io/'
+    details: 'Turn any 2D image into a solid, 3D-printable model right in the browser — contours, relief and multicolor, fully offline.',
+    fileSize: 'BROWSER',
+    license: 'FREE',
+    version: 'LIVE',
+    fileUrl: 'https://nosense-3d.itch.io/3d-kun-3d-estruder-from-2d-images'
   },
   {
-    name: 'Character Motion Tests',
-    category: 'Prototype',
-    details: 'A place for testing rigs, masks, fantasy characters, controller ideas, and animation loops before they become full releases.',
-    fileSize: 'GLB / WEBGL',
-    license: 'DEV BUILD',
-    version: 'PREVIEW',
-    fileUrl: 'https://nosense-3d.itch.io/'
+    name: 'Real Gamepad DJ-System',
+    category: 'Tool',
+    details: 'Turn a controller, mouse or finger into a scratch turntable, with a lo-fi / boom-bap beat looping while you scratch a sample.',
+    fileSize: 'BROWSER',
+    license: 'FREE',
+    version: 'LIVE',
+    fileUrl: 'https://nosense-3d.itch.io/real-gamepad-dj-system'
   },
   {
-    name: 'Devlog Sketch Archive',
-    category: 'Devlog',
-    details: 'Progress notes, rough builds, process captures, screenshots, and fragments from the ongoing Nosense 3D project space.',
-    fileSize: 'UPDATES',
-    license: 'OPEN NOTES',
-    version: 'ONGOING',
-    fileUrl: 'https://nosense-3d.itch.io/'
+    name: 'Auto Image Drawer',
+    category: 'Tool',
+    details: 'Drop in any image and watch a cursor sketch it back line by line — three styles, plus vertical video export for social.',
+    fileSize: 'BROWSER',
+    license: 'FREE',
+    version: 'LIVE',
+    fileUrl: 'https://nosense-3d.itch.io/auto-image-drawer-watch-your-image-draw-itself'
   },
   {
-    name: 'Asset Lab Experiments',
-    category: 'Asset Lab',
-    details: 'Sprites, 3D fragments, poster textures, ASCII screens, and visual systems that can become future indie game assets.',
-    fileSize: 'MIXED MEDIA',
-    license: 'STUDIO LAB',
-    version: 'COLLECTION',
-    fileUrl: 'https://nosense-3d.itch.io/'
+    name: 'DRUMZ Lofi',
+    category: 'Tool',
+    details: 'Free lo-fi / boom-bap / Dilla-style drum loop generator with a colored MIDI piano roll and MIDI / WAV / MP3 export.',
+    fileSize: 'BROWSER',
+    license: 'FREE',
+    version: 'LIVE',
+    fileUrl: 'https://nosense-3d.itch.io/drumzlofidrumloops'
+  },
+  {
+    name: 'webcam—ascii',
+    category: 'Tool',
+    details: 'Turns your webcam feed into live ASCII art, entirely in the browser — no installs, no accounts.',
+    fileSize: 'BROWSER',
+    license: 'FREE',
+    version: 'LIVE',
+    fileUrl: 'https://nosense-3d.itch.io/webcam-ascii'
   }
 ];
 

@@ -1334,7 +1334,7 @@ export default function InteractiveCover() {
               Indie <span className="italic font-light">Tools & Games</span>
             </h2>
             <p className="font-sans text-neutral-500 text-xs md:text-sm mt-3 font-light leading-relaxed">
-              Playable prototypes, strange browser toys, character tests, visual tools, and devlog fragments published through the Nosense 3D itch.io lab.
+              Playable browser tools and toys — built in JavaScript and released free on the nosense_3d itch.io page. Click any card to open it.
             </p>
           </div>
           <div className="font-mono text-[10px] text-neutral-400 uppercase mt-4 md:mt-0">
