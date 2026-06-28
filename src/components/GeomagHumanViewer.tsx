@@ -9,22 +9,7 @@ interface GeomagHumanViewerProps {
   autoRotate?: boolean;
 }
 
-const MODEL_URL = '/assets/models/neko-mask-character-skeleton.glb';
-
-type BoneRig = {
-  bones: Record<string, THREE.Bone>;
-  baseQuaternions: Record<string, THREE.Quaternion>;
-  baseDirections: Record<string, THREE.Vector3>;
-};
-
-type StageMotion = {
-  x: number;
-  y: number;
-  z: number;
-  rotX: number;
-  rotY: number;
-  rotZ: number;
-};
+const MODEL_URL = '/assets/models/neko-mask-character-animated.glb';
 
 const getPreferredClipName = (pose: GeomagPose, clips: THREE.AnimationClip[]) => {
   if (clips.length === 0) return null;
@@ -61,224 +46,6 @@ const makeMaterialOpaque = (material: THREE.Material) => {
   if ('transmission' in typedMaterial) typedMaterial.transmission = 0;
   if ('thickness' in typedMaterial) typedMaterial.thickness = 0;
   material.needsUpdate = true;
-};
-
-const createBoneRig = (model: THREE.Object3D): BoneRig => {
-  const bones: Record<string, THREE.Bone> = {};
-  const baseQuaternions: Record<string, THREE.Quaternion> = {};
-  const baseDirections: Record<string, THREE.Vector3> = {};
-
-  model.traverse((child) => {
-    if (child instanceof THREE.Bone) {
-      bones[child.name] = child;
-      baseQuaternions[child.name] = child.quaternion.clone();
-      const firstBoneChild = child.children.find((node) => node instanceof THREE.Bone);
-      if (firstBoneChild) {
-        baseDirections[child.name] = firstBoneChild.position.clone().normalize();
-      }
-    }
-  });
-
-  return { bones, baseQuaternions, baseDirections };
-};
-
-const getStageMotion = (poseId: string, elapsed: number): StageMotion => {
-  const walk = Math.sin(elapsed * 3.1);
-  const run = Math.sin(elapsed * 7.4);
-  const runImpact = Math.abs(Math.sin(elapsed * 7.4));
-  const breathe = Math.sin(elapsed * 1.65);
-  const pulse = Math.sin(elapsed * 4.6);
-
-  switch (poseId) {
-    case 'walk_cycle':
-      return {
-        x: walk * 0.035,
-        y: Math.abs(walk) * 0.045,
-        z: 0,
-        rotX: 0.02 * Math.abs(walk),
-        rotY: 0.08 * walk,
-        rotZ: -0.035 * walk,
-      };
-
-    case 'run_sprint':
-      return {
-        x: run * 0.055,
-        y: runImpact * 0.075,
-        z: 0,
-        rotX: -0.16 + 0.035 * runImpact,
-        rotY: 0.11 * run,
-        rotZ: -0.055 * run,
-      };
-
-    case 'jump_airborne':
-      return {
-        x: 0,
-        y: 0.12 + Math.sin(elapsed * 2.4) * 0.055,
-        z: 0,
-        rotX: -0.08 + 0.04 * breathe,
-        rotY: 0.08 * breathe,
-        rotZ: 0.06 * pulse,
-      };
-
-    case 'landing':
-      return {
-        x: 0,
-        y: Math.abs(pulse) * 0.035,
-        z: 0,
-        rotX: 0.2 + 0.04 * Math.abs(pulse),
-        rotY: 0.025 * breathe,
-        rotZ: 0,
-      };
-
-    case 'sitting_relax':
-      return {
-        x: 0,
-        y: 0.018 * breathe,
-        z: 0,
-        rotX: 0.06 + 0.015 * breathe,
-        rotY: 0.035 * Math.sin(elapsed * 0.8),
-        rotZ: 0.012 * breathe,
-      };
-
-    case 'thinking':
-      return {
-        x: 0,
-        y: 0.025 * breathe,
-        z: 0,
-        rotX: 0.055 + 0.02 * pulse,
-        rotY: -0.12 + 0.05 * breathe,
-        rotZ: -0.025,
-      };
-
-    case 'victory':
-      return {
-        x: 0,
-        y: 0.035 + Math.abs(pulse) * 0.04,
-        z: 0,
-        rotX: -0.035 * Math.abs(pulse),
-        rotY: 0.08 * breathe,
-        rotZ: 0.035 * pulse,
-      };
-
-    case 'pointing':
-      return {
-        x: 0.025 * breathe,
-        y: 0.02 * breathe,
-        z: 0,
-        rotX: 0.01,
-        rotY: 0.2 + 0.045 * breathe,
-        rotZ: -0.02 * pulse,
-      };
-
-    default:
-      return {
-        x: 0,
-        y: 0.022 * breathe,
-        z: 0,
-        rotX: 0.012 * breathe,
-        rotY: 0.04 * Math.sin(elapsed * 0.85),
-        rotZ: 0.012 * Math.cos(elapsed * 1.1),
-      };
-  }
-};
-
-const applyProceduralMotion = (rig: BoneRig, poseId: string, elapsed: number) => {
-  Object.entries(rig.baseQuaternions).forEach(([name, quaternion]) => {
-    rig.bones[name]?.quaternion.copy(quaternion);
-  });
-
-  const setRotation = (name: string, x = 0, y = 0, z = 0) => {
-    const bone = rig.bones[name];
-    if (!bone) return;
-    bone.rotateX(x);
-    bone.rotateY(y);
-    bone.rotateZ(z);
-  };
-
-  const softenArmToward = (name: string, direction: THREE.Vector3, strength = 0.42) => {
-    const bone = rig.bones[name];
-    const baseQuaternion = rig.baseQuaternions[name];
-    const baseDirection = rig.baseDirections[name];
-    if (!bone || !baseQuaternion || !baseDirection) return;
-
-    const targetDirection = direction.clone().normalize();
-    const targetQuaternion = new THREE.Quaternion()
-      .setFromUnitVectors(baseDirection, targetDirection)
-      .multiply(baseQuaternion);
-
-    bone.quaternion.copy(baseQuaternion).slerp(targetQuaternion, strength);
-  };
-
-  const wave = Math.sin(elapsed * 2.2);
-  const pulse = Math.sin(elapsed * 3.6);
-  const fast = Math.sin(elapsed * 5.4);
-  const runImpact = Math.abs(fast);
-
-  setRotation('body', 0.018 * Math.abs(wave), 0.035 * Math.sin(elapsed * 0.8), 0.018 * wave);
-  setRotation('body_top1', 0.022 * wave, 0.01 * pulse, 0.016 * Math.cos(elapsed * 1.1));
-  setRotation('neck', 0.012 * pulse, 0.018 * wave, 0);
-  setRotation('head', 0.02 * pulse, 0.028 * Math.sin(elapsed * 0.9), 0.008 * wave);
-  softenArmToward('arm_left_top', new THREE.Vector3(0.72, -0.62, 0.08 + 0.08 * wave), 0.48);
-  softenArmToward('arm_right_top', new THREE.Vector3(-0.72, -0.62, 0.08 - 0.08 * wave), 0.48);
-
-  switch (poseId) {
-    case 'walk_cycle':
-      setRotation('body', 0.025 * runImpact, 0.045 * wave, 0.025 * wave);
-      setRotation('arm_left_top', 0.05 * wave, 0, -0.16 + 0.08 * wave);
-      setRotation('arm_right_top', -0.05 * wave, 0, 0.16 - 0.08 * wave);
-      break;
-
-    case 'run_sprint':
-      setRotation('body', -0.08 + 0.035 * runImpact, 0.06 * fast, -0.035 * fast);
-      setRotation('arm_left_top', 0.08 * fast, 0, -0.18 + 0.12 * fast);
-      setRotation('arm_right_top', -0.08 * fast, 0, 0.18 - 0.12 * fast);
-      break;
-
-    case 'jump_airborne':
-      setRotation('body', -0.08 + 0.035 * wave, 0, 0.025 * pulse);
-      setRotation('arm_left_top', 0, 0, 0.2 + 0.04 * wave);
-      setRotation('arm_right_top', 0, 0, -0.2 - 0.04 * wave);
-      break;
-
-    case 'landing':
-      setRotation('body', 0.12 + 0.03 * Math.abs(pulse), 0, 0);
-      setRotation('arm_left_top', 0.04 * pulse, 0, -0.16);
-      setRotation('arm_right_top', -0.04 * pulse, 0, 0.16);
-      break;
-
-    case 'sitting_relax':
-      setRotation('body', 0.08 + 0.015 * wave, 0.02 * wave, 0);
-      setRotation('arm_left_top', 0, 0, -0.12);
-      setRotation('arm_right_top', 0, 0, 0.12);
-      break;
-
-    case 'thinking':
-      setRotation('arm_right_top', 0.04 * wave, 0.05, -0.18 + 0.035 * wave);
-      setRotation('arm_left_top', 0, 0, -0.12);
-      setRotation('head', 0.08 + 0.02 * pulse, -0.12, 0.025);
-      break;
-
-    case 'victory':
-      setRotation('arm_left_top', 0, 0, 0.24 + 0.035 * wave);
-      setRotation('arm_right_top', 0, 0, -0.24 - 0.035 * wave);
-      setRotation('body_top1', 0.025 * wave, 0, 0.03 * pulse);
-      break;
-
-    case 'pointing':
-      setRotation('body', 0.01 * wave, 0.12 + 0.025 * wave, 0);
-      setRotation('arm_right_top', 0, 0.035 * pulse, 0.06);
-      setRotation('arm_right_hand', 0, 0.08 * pulse, 0);
-      setRotation('arm_left_top', 0, 0, -0.12);
-      setRotation('head', 0.025 * pulse, 0.26, 0);
-      break;
-
-    default:
-      setRotation('arm_left_top', 0.08 * wave, 0, -0.05);
-      setRotation('arm_right_top', -0.08 * wave, 0, 0.05);
-      setRotation('leg_left_top', -0.035 * wave, 0, 0);
-      setRotation('leg_right_top', 0.035 * wave, 0, 0);
-      break;
-  }
 };
 
 export default function GeomagHumanViewer({
@@ -326,7 +93,7 @@ export default function GeomagHumanViewer({
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
 
     mountRef.current.innerHTML = '';
     mountRef.current.appendChild(renderer.domElement);
@@ -364,10 +131,6 @@ export default function GeomagHumanViewer({
 
     let disposed = false;
     let mixer: THREE.AnimationMixer | null = null;
-    let proceduralRig: BoneRig | null = null;
-    let animatedModel: THREE.Object3D | null = null;
-    let baseModelPosition = new THREE.Vector3();
-    let baseModelRotation = new THREE.Euler();
 
     const fitModelToViewport = (model: THREE.Object3D) => {
       const box = new THREE.Box3().setFromObject(model);
@@ -413,12 +176,7 @@ export default function GeomagHumanViewer({
             materials.forEach(makeMaterialOpaque);
           }
         });
-        proceduralRig = createBoneRig(model);
-
         fitModelToViewport(model);
-        animatedModel = model;
-        baseModelPosition = model.position.clone();
-        baseModelRotation = model.rotation.clone();
         containerGroup.add(model);
 
         if (gltf.animations.length > 0) {
@@ -427,10 +185,8 @@ export default function GeomagHumanViewer({
           mixer = new THREE.AnimationMixer(model);
           mixer.clipAction(selectedClip).reset().fadeIn(0.2).play();
           setClipLabel(selectedClip.name || 'ANIMATION');
-        } else if (Object.keys(proceduralRig.bones).length > 0) {
-          setClipLabel(`RIG_MOTION_${pose.title}`);
         } else {
-          setClipLabel('T_POSE_PREVIEW');
+          setClipLabel('NO_ANIMATION');
         }
 
         setLoading(false);
@@ -526,28 +282,33 @@ export default function GeomagHumanViewer({
     let animationFrameId: number;
     const clock = new THREE.Clock();
 
+    // Only run the render loop while the viewport is on-screen and the tab is
+    // visible. With eight of these mounted at once, rendering them all
+    // continuously wastes GPU/CPU and risks hitting the browser's WebGL
+    // context limit. We keep requesting frames (cheap) but skip the heavy
+    // motion + render work when the canvas is not actually visible.
+    let isOnScreen = true;
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        isOnScreen = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0.01 }
+    );
+    visibilityObserver.observe(containerDom);
+
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+
+      if (!isOnScreen || document.hidden) {
+        // Drain the delta so motion resumes smoothly instead of jumping.
+        clock.getDelta();
+        return;
+      }
+
       const delta = clock.getDelta();
       const elapsed = clock.elapsedTime;
 
       mixer?.update(delta);
-      if (proceduralRig && !mixer) {
-        applyProceduralMotion(proceduralRig, pose.id, elapsed);
-        if (animatedModel) {
-          const stageMotion = getStageMotion(pose.id, elapsed);
-          animatedModel.position.set(
-            baseModelPosition.x + stageMotion.x,
-            baseModelPosition.y + stageMotion.y,
-            baseModelPosition.z + stageMotion.z
-          );
-          animatedModel.rotation.set(
-            baseModelRotation.x + stageMotion.rotX,
-            baseModelRotation.y + stageMotion.rotY,
-            baseModelRotation.z + stageMotion.rotZ
-          );
-        }
-      }
 
       if (isRotatingRef.current && !isDragging) {
         containerGroup.rotation.y += 0.0035;
@@ -588,6 +349,7 @@ export default function GeomagHumanViewer({
       disposed = true;
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
       containerDom.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);

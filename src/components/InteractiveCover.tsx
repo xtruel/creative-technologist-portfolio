@@ -578,7 +578,7 @@ export default function InteractiveCover() {
           <div className="flex items-center space-x-3.5 mb-6 p-2.5 rounded-xl border border-neutral-900/10 bg-white/20 hover:bg-white/40 transition-all duration-300 backdrop-blur-sm group select-none max-w-sm">
             <div className="relative w-11 h-11 rounded-full overflow-hidden border border-neutral-900/20 shadow-sm flex-shrink-0">
               <img 
-                src="/assets/images/eugenio_avatar_1782598579248.jpg" 
+                src="/assets/images/eugenio_avatar_v2.png"
                 alt="Eugenio Longhitano (qwerty3D_)" 
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"

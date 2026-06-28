@@ -9,3 +9,10 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Local editor/preview config
+.claude/
+# Blender QA render artifacts
+tools/qa/
+# Raw avatar source (masked output is eugenio_avatar_v2.png)
+public/assets/images/ChatGPT Image*.png
